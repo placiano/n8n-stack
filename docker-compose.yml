@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: ankane/pgvector
+    image: pgvector/pgvector:0.8.0-pg17
     container_name: postgres-n8n
     restart: unless-stopped
     ports:
@@ -10,11 +10,13 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - n8n_network
+      n8n_network:
+        aliases:
+          - postgres
 
   evolution-api:
     container_name: evolution-api-n8n
-    image: atendai/evolution-api:v2.2.3
+    image: atendai/evolution-api:latest
     restart: always
     ports:
       - 8088:8080
