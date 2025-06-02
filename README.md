@@ -43,10 +43,10 @@ Editar el archivo `.env` y configurar:
 
 ### 3. Configurar ngrok
 
-Editar `ngrok.yml` y añadir tu authtoken:
+En el archivo `.env`, configurar tu authtoken de ngrok:
 
-```yaml
-authtoken: TU_AUTHTOKEN_DE_NGROK
+```env
+NGROK_AUTHTOKEN=tu_authtoken_de_ngrok
 ```
 
 Puedes obtener tu authtoken en: https://dashboard.ngrok.com/get-started/your-authtoken

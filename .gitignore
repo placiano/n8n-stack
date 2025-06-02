@@ -33,3 +33,6 @@ data/
 
 # ngrok personal authtoken
 ngrok-authtoken.txt
+
+# Claude configuration
+CLAUDE.md
