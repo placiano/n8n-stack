@@ -1,0 +1,35 @@
+# Variables de entorno
+.env
+.env.local
+.env.production
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Archivos temporales
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Backups
+*.bak
+*.backup
+*.sql
+
+# Directorios de datos locales
+data/
+
+# IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# ngrok personal authtoken
+ngrok-authtoken.txt

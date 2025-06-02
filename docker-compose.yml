@@ -1,0 +1,94 @@
+services:
+  postgres:
+    image: ankane/pgvector
+    container_name: postgres-n8n
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - n8n_network
+
+  evolution-api:
+    container_name: evolution-api-n8n
+    image: atendai/evolution-api:v2.2.3
+    restart: always
+    ports:
+      - 8088:8080
+    volumes:
+      - lab_evolution_instances:/lab_evolution/instances
+    env_file:
+      - .env
+    networks:
+      - n8n_network
+
+  ngrok:
+    image: ngrok/ngrok:alpine
+    container_name: ngrok-n8n
+    restart: always
+    ports:
+      - "4041:4040"  # interfaz web de ngrok
+    env_file:
+      - .env
+    volumes:
+      - ./ngrok.yml:/etc/ngrok.yml
+    command: start --all --config /etc/ngrok.yml
+    depends_on:
+      - n8n
+      - evolution-api
+    networks:
+      - n8n_network
+
+  redis:
+    image: bitnami/redis:latest
+    container_name: redis-n8n
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "6381:6379"
+    networks:
+      - n8n_network
+    volumes:
+      - 'redis_data:/bitnami/redis/data'
+
+  adminer:
+    image: adminer
+    container_name: adminer-n8n
+    restart: always
+    ports:
+      - "8082:8080"
+    depends_on:
+      - postgres
+    networks:
+      - n8n_network
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: n8n-app
+    restart: always
+    ports:
+      - 5679:5678
+    env_file:
+      - .env
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - n8n_network
+
+volumes:
+  n8n_data:
+    driver: local
+  postgres_data:
+    driver: local
+  lab_evolution_instances:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  n8n_network:
+    driver: bridge
