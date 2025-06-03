@@ -39,10 +39,14 @@ services:
       - .env
     volumes:
       - ./ngrok.yml:/etc/ngrok.yml
+      - ./scripts/ngrok-healthcheck.sh:/ngrok-healthcheck.sh:ro
     command: start --all --config /etc/ngrok.yml
-    depends_on:
-      - n8n
-      - evolution-api
+    healthcheck:
+      test: ["CMD", "/ngrok-healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - n8n_network
 
@@ -71,7 +75,9 @@ services:
       - n8n_network
 
   n8n:
-    image: docker.n8n.io/n8nio/n8n
+    build:
+      context: .
+      dockerfile: Dockerfile.n8n
     container_name: n8n-app
     restart: always
     ports:
@@ -80,6 +86,10 @@ services:
       - .env
     volumes:
       - n8n_data:/home/node/.n8n
+      - ./scripts:/scripts:ro
+    depends_on:
+      - postgres
+      - ngrok
     networks:
       - n8n_network
 

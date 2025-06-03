@@ -1,0 +1,10 @@
+FROM docker.n8n.io/n8nio/n8n
+
+USER root
+RUN apk add --no-cache bash curl
+
+COPY scripts/update-webhook-url.sh /update-webhook-url.sh
+RUN chmod +x /update-webhook-url.sh
+
+USER node
+ENTRYPOINT ["bash", "/update-webhook-url.sh"]
