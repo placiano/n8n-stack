@@ -16,14 +16,21 @@ services:
 
   evolution-api:
     container_name: evolution-api-n8n
-    image: atendai/evolution-api:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.evolution
     restart: always
     ports:
       - 8088:8080
     volumes:
       - lab_evolution_instances:/lab_evolution/instances
+      - ./scripts:/scripts:ro
     env_file:
       - .env
+    depends_on:
+      - postgres
+      - redis
+      - ngrok
     networks:
       - n8n_network
 

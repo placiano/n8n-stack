@@ -1,0 +1,10 @@
+FROM atendai/evolution-api:latest
+
+USER root
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+COPY scripts/update-evolution-url.sh /update-evolution-url.sh
+RUN chmod +x /update-evolution-url.sh
+
+USER node
+ENTRYPOINT ["bash", "/update-evolution-url.sh"]
