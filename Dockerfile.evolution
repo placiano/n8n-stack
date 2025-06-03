@@ -3,6 +3,10 @@ FROM atendai/evolution-api:latest
 USER root
 RUN apk add --no-cache bash curl jq
 
+# Crear directorio y dar permisos al usuario node
+RUN mkdir -p /evolution/instances && \
+    chown -R node:node /evolution/instances
+
 COPY scripts/update-evolution-url.sh /update-evolution-url.sh
 RUN chmod +x /update-evolution-url.sh
 
