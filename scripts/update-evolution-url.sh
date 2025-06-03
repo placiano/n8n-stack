@@ -7,6 +7,12 @@ until curl -s http://ngrok:4040/api/tunnels > /dev/null 2>&1; do
     sleep 2
 done
 
+echo "Esperando a que el túnel evolution-api esté disponible..."
+until curl -s http://ngrok:4040/api/tunnels | grep -q '"name":"evolution-api"'; do
+    echo "Túnel evolution-api aún no está listo, esperando 2 segundos..."
+    sleep 2
+done
+
 echo "Ngrok está listo, obteniendo URL del túnel de evolution-api..."
 
 # Obtener específicamente la URL del túnel llamado "evolution-api"
