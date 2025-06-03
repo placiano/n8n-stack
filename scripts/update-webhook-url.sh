@@ -14,12 +14,8 @@ TUNNELS_JSON=$(curl -s http://ngrok:4040/api/tunnels)
 echo "Túneles disponibles:"
 echo "$TUNNELS_JSON" | grep -o '"name":"[^"]*"' | grep -o '"[^"]*"$'
 
-# Buscar específicamente el túnel de n8n
-NGROK_URL=$(echo "$TUNNELS_JSON" | \
-    grep -B5 -A5 '"name":"n8n"' | \
-    grep -o '"public_url":"https://[^"]*"' | \
-    grep -o 'https://[^"]*' | \
-    head -1)
+# Buscar específicamente el túnel de n8n usando jq
+NGROK_URL=$(echo "$TUNNELS_JSON" | jq -r '.tunnels[] | select(.name=="n8n") | .public_url')
 
 if [ -z "$NGROK_URL" ]; then
     echo "Error: No se pudo obtener la URL del túnel n8n"

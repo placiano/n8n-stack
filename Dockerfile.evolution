@@ -1,7 +1,7 @@
 FROM atendai/evolution-api:latest
 
 USER root
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache bash curl jq
 
 COPY scripts/update-evolution-url.sh /update-evolution-url.sh
 RUN chmod +x /update-evolution-url.sh

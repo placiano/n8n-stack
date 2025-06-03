@@ -14,12 +14,8 @@ TUNNELS_JSON=$(curl -s http://ngrok:4040/api/tunnels)
 echo "Túneles disponibles:"
 echo "$TUNNELS_JSON" | grep -o '"name":"[^"]*"' | grep -o '"[^"]*"$'
 
-# Buscar específicamente el túnel de evolution-api
-NGROK_URL=$(echo "$TUNNELS_JSON" | \
-    grep -B5 -A5 '"name":"evolution-api"' | \
-    grep -o '"public_url":"https://[^"]*"' | \
-    grep -o 'https://[^"]*' | \
-    head -1)
+# Buscar específicamente el túnel de evolution-api usando jq
+NGROK_URL=$(echo "$TUNNELS_JSON" | jq -r '.tunnels[] | select(.name=="evolution-api") | .public_url')
 
 if [ -z "$NGROK_URL" ]; then
     echo "Error: No se pudo obtener la URL del túnel evolution-api"
@@ -34,5 +30,6 @@ echo "URL de ngrok para evolution-api obtenida: $NGROK_URL"
 export SERVER_URL="${NGROK_URL}"
 echo "SERVER_URL configurada: $SERVER_URL"
 
-# Iniciar Evolution API
-exec node ./dist/src/main.js
+# Iniciar Evolution API con el comando original
+cd /evolution
+exec npm run start:prod
