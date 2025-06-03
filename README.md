@@ -167,6 +167,39 @@ docker-compose restart n8n evolution-api
 
 Los servicios detectarán automáticamente las nuevas URLs.
 
+## 🔄 Scripts de actualización
+
+### Actualizar todo el stack
+
+El script `update-n8n.sh` actualiza todo el stack completo:
+
+```bash
+./update-n8n.sh
+```
+
+Este script:
+- Hace pull de los últimos cambios del repositorio
+- Detiene todos los contenedores
+- Construye/descarga las nuevas imágenes
+- Inicia los servicios actualizados
+- Limpia las imágenes antiguas
+- Verifica que todos los servicios estén funcionando
+
+### Actualizar solo n8n
+
+Si solo quieres actualizar n8n sin afectar otros servicios:
+
+```bash
+./update-n8n-only.sh
+```
+
+Este script:
+- Detiene solo el contenedor de n8n
+- Descarga/construye la nueva imagen de n8n
+- Reinicia n8n con la versión actualizada
+- Elimina la imagen anterior
+- Mantiene todos los demás servicios funcionando
+
 ## 📊 Gestión de datos
 
 ### Backup de PostgreSQL
