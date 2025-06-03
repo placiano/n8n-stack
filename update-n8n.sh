@@ -173,10 +173,25 @@ echo "  - ngrok Dashboard: http://localhost:4041"
 if [ "$CURRENT_BRANCH" = "n8n_tunnel" ]; then
     echo ""
     echo "URLs públicas de ngrok:"
+    
+    # Esperar un poco más para que los servicios registren las URLs
+    sleep 5
+    
     echo -n "  - n8n: "
-    docker logs n8n-app 2>&1 | grep "Editor is now accessible via:" | tail -1 | awk '{print $NF}' || echo "Verificar en logs"
+    N8N_URL=$(docker logs n8n-app 2>&1 | grep "Editor is now accessible via:" | tail -1 | awk '{print $NF}')
+    if [ -z "$N8N_URL" ]; then
+        echo "Aún iniciando... (verificar con: docker logs n8n-app)"
+    else
+        echo "$N8N_URL"
+    fi
+    
     echo -n "  - Evolution API: "
-    docker logs evolution-api-n8n 2>&1 | grep "SERVER_URL configurada:" | tail -1 | awk '{print $NF}' || echo "Verificar en logs"
+    EVO_URL=$(docker logs evolution-api-n8n 2>&1 | grep "SERVER_URL configurada:" | tail -1 | awk '{print $NF}')
+    if [ -z "$EVO_URL" ]; then
+        echo "Aún iniciando... (verificar con: docker logs evolution-api-n8n)"
+    else
+        echo "$EVO_URL"
+    fi
 fi
 
 echo ""

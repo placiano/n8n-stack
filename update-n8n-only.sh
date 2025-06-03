@@ -125,8 +125,15 @@ echo ""
 echo "n8n está disponible en: http://localhost:5679"
 
 if [ "$CURRENT_BRANCH" = "n8n_tunnel" ]; then
+    # Esperar un poco más para que n8n registre la URL
+    sleep 5
     echo -n "URL pública: "
-    docker logs n8n-app 2>&1 | grep "Editor is now accessible via:" | tail -1 | awk '{print $NF}' || echo "Verificar en logs"
+    URL=$(docker logs n8n-app 2>&1 | grep "Editor is now accessible via:" | tail -1 | awk '{print $NF}')
+    if [ -z "$URL" ]; then
+        echo "Aún iniciando... (verificar con: docker logs n8n-app)"
+    else
+        echo "$URL"
+    fi
 fi
 
 echo ""
