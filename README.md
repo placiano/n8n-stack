@@ -104,6 +104,69 @@ Una vez iniciado ngrok, puedes ver las URLs públicas en:
 - Dashboard web: http://localhost:4041
 - O ejecutar: `docker logs ngrok-n8n`
 
+## 🌐 Rama n8n_tunnel - Configuración automática de URLs públicas
+
+Esta rama incluye una configuración especial que permite a n8n y Evolution API detectar automáticamente sus URLs públicas de ngrok.
+
+### Características de la rama n8n_tunnel:
+
+1. **Detección automática de URLs**: Los servicios detectan automáticamente sus URLs públicas de ngrok al iniciar
+2. **Configuración de webhooks**: n8n configura automáticamente la URL correcta para webhooks
+3. **URLs separadas**: Cada servicio obtiene su propia URL de ngrok:
+   - n8n: obtiene la URL del túnel llamado "n8n"
+   - Evolution API: obtiene la URL del túnel llamado "evolution-api"
+
+### Cómo funciona:
+
+1. **Scripts personalizados**: Se incluyen scripts que esperan a que ngrok esté listo
+2. **Dockerfiles personalizados**: Las imágenes de n8n y Evolution API se construyen con los scripts integrados
+3. **Parseo de JSON**: Se usa `jq` para obtener las URLs correctas de cada túnel
+
+### Archivos añadidos en esta rama:
+
+- `Dockerfile.n8n`: Imagen personalizada de n8n con script de detección
+- `Dockerfile.evolution`: Imagen personalizada de Evolution API con script de detección
+- `scripts/update-webhook-url.sh`: Script para n8n
+- `scripts/update-evolution-url.sh`: Script para Evolution API
+- `scripts/ngrok-healthcheck.sh`: Healthcheck para ngrok
+
+### Uso de la rama n8n_tunnel:
+
+```bash
+# Cambiar a la rama con túneles automáticos
+git checkout n8n_tunnel
+
+# Construir las imágenes personalizadas
+docker-compose build
+
+# Iniciar los servicios
+docker-compose up -d
+```
+
+### Verificar las URLs asignadas:
+
+```bash
+# Ver URL de n8n
+docker logs n8n-app | grep "URL"
+
+# Ver URL de Evolution API
+docker logs evolution-api-n8n | grep "URL"
+
+# Ver todas las URLs de ngrok
+curl -s http://localhost:4041/api/tunnels | jq
+```
+
+### Reiniciar servicios tras cambio de URL:
+
+Si ngrok se reinicia y cambian las URLs:
+
+```bash
+# Solo reiniciar n8n y Evolution API
+docker-compose restart n8n evolution-api
+```
+
+Los servicios detectarán automáticamente las nuevas URLs.
+
 ## 📊 Gestión de datos
 
 ### Backup de PostgreSQL
