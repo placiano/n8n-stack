@@ -22,6 +22,7 @@ logs/
 *.bak
 *.backup
 *.sql
+backups/
 
 # Directorios de datos locales
 data/

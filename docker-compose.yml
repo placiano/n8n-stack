@@ -9,6 +9,12 @@ services:
       - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       n8n_network:
         aliases:
@@ -19,7 +25,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.evolution
-    restart: always
+    restart: unless-stopped
     ports:
       - 8088:8080
     volumes:
@@ -28,16 +34,19 @@ services:
     env_file:
       - .env
     depends_on:
-      - postgres
-      - redis
-      - ngrok
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ngrok:
+        condition: service_healthy
     networks:
       - n8n_network
 
   ngrok:
     image: ngrok/ngrok:alpine
     container_name: ngrok-n8n
-    restart: always
+    restart: unless-stopped
     ports:
       - "4041:4040"  # interfaz web de ngrok
     environment:
@@ -60,11 +69,17 @@ services:
   redis:
     image: bitnami/redis:latest
     container_name: redis-n8n
-    restart: always
+    restart: unless-stopped
     env_file:
       - .env
     ports:
       - "6381:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - n8n_network
     volumes:
@@ -73,11 +88,12 @@ services:
   adminer:
     image: adminer
     container_name: adminer-n8n
-    restart: always
+    restart: unless-stopped
     ports:
       - "8082:8080"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - n8n_network
 
@@ -86,7 +102,7 @@ services:
       context: .
       dockerfile: Dockerfile.n8n
     container_name: n8n-app
-    restart: always
+    restart: unless-stopped
     ports:
       - 5679:5678
     env_file:
@@ -95,8 +111,10 @@ services:
       - n8n_data:/home/node/.n8n
       - ./scripts:/scripts:ro
     depends_on:
-      - postgres
-      - ngrok
+      postgres:
+        condition: service_healthy
+      ngrok:
+        condition: service_healthy
     networks:
       - n8n_network
 
