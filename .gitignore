@@ -22,6 +22,8 @@ logs/
 *.bak
 *.backup
 *.sql
+*.tar.gz
+*.sha256
 backups/
 
 # Directorios de datos locales
